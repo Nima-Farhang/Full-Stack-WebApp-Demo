@@ -51,6 +51,7 @@ The frontend is responsible for presentation, browser routing, local UI state, a
 ├── README.md
 ├── docker-compose.yml
 ├── docs/
+│   ├── adr/
 │   ├── architecture.md
 │   ├── data-platform.md
 │   ├── deployment.md

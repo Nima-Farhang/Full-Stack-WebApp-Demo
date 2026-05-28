@@ -125,4 +125,4 @@ When those artifacts are added, they should be labeled clearly as one of:
 
 ## Architecture Decision Records
 
-Major decisions are tracked in `docs/adr/`. Existing React, Django REST Framework, and Docker Compose choices are recorded as accepted decisions. Planned modernization decisions, such as TypeScript, Cognito, Celery, ingestion, Terraform, and Kubernetes, are recorded as proposed until implemented.
+Major decisions are tracked in `docs/adr/`. Django REST Framework is recorded as an accepted decision because it reflects the current backend architecture. Planned modernization decisions, such as React TypeScript, Cognito, Celery, event-driven ingestion, Snowflake/Iceberg, Terraform, and Kubernetes, are recorded as proposed until implemented.

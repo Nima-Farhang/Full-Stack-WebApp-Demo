@@ -20,6 +20,13 @@ The goal is not to over-engineer the application. The goal is to turn it into a 
 
 # Guiding Principles
 
+## 0. Befre you start
+
+Read the
+"README.md"
+and "docs/*" documents
+Do not produce any code yet. Familiarize yourself with the project, what it is and what it is sopposed to do
+
 ## 1. Keep the application realistic
 
 Do not add technology for decoration only. Every new capability should have a clear purpose and should be visible in the repository.

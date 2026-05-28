@@ -1,235 +1,128 @@
+# Architecture
 
-# Architecture Documentation
+## Purpose
 
-## Overview
+Utilez WebApp is a decoupled React and Django application used as a public technical portfolio project. The current implementation focuses on a practical full-stack foundation: frontend screens, reusable components, Redux state, REST API calls, Django REST Framework serialization, address persistence, and Docker Compose local development.
 
-Utilez is designed as a modern decoupled web application using:
+The architecture is intentionally being modernized incrementally. The near-term goal is not to replace the application with a new system, but to evolve it into a credible demonstration of full-stack, platform, data, and cloud engineering.
 
-- React frontend
-- Django REST backend
-- Dockerized infrastructure
-
-The system follows a client-server architecture with clear separation between presentation, business logic, and persistence layers.
-
----
-
-# System Architecture
+## Current System Context
 
 ```text
-+-------------------+
-|   React Frontend  |
-|-------------------|
-| Components        |
-| Redux Store       |
-| Routing           |
-| API Calls         |
-+---------+---------+
-          |
-          | HTTP / JSON
-          v
-+-------------------+
-| Django REST API   |
-|-------------------|
-| Views             |
-| Serializers       |
-| Models            |
-| Business Logic    |
-+---------+---------+
-          |
-          v
-+-------------------+
-| Database Layer    |
-|-------------------|
-| User Data         |
-| Address Data      |
-| Coordinates       |
-+-------------------+
+User
+ |
+ | Browser
+ v
++---------------------+       HTTP / JSON       +----------------------+
+| React frontend     | -----------------------> | Django REST backend  |
+| localhost:3000     |                          | localhost:8000       |
+|                     | <----------------------- |                      |
+| - Components       |                          | - DRF views          |
+| - Redux store      |                          | - Serializers        |
+| - React Router     |                          | - Django models      |
++---------------------+                          +----------+-----------+
+                                                        |
+                                                        v
+                                             +----------------------+
+                                             | Postgres/PostGIS     |
+                                             | Docker container     |
+                                             +----------------------+
 ```
 
----
-
-# Frontend Architecture
-
-## Technology Choices
-
-### React
-Used for:
-- Component-based UI development
-- State-driven rendering
-- Reusable frontend patterns
-
-### Redux
-Used for:
-- Global state management
-- Predictable state flow
-- API interaction orchestration
-
-### React Router
-Used for:
-- Client-side navigation
-- Single-page application behavior
-
----
-
-# Backend Architecture
-
-## Django REST Framework
-
-The backend uses Django REST Framework to expose RESTful APIs.
-
-### Responsibilities
-- User management
-- Address persistence
-- Validation
-- API serialization
-- Business logic
-
----
-
-# Backend Structure
-
-```text
-backend/
-├── core/
-│   ├── settings.py
-│   ├── urls.py
-│   └── config_file.py
-│
-├── userApi/
-│   ├── models.py
-│   ├── serializers.py
-│   ├── views.py
-│   └── urls.py
-```
-
----
-
-# Data Model
-
-## Address Model
-
-The Address entity demonstrates:
-- One-to-one user relationship
-- JSON storage
-- Coordinate persistence
-- Address metadata storage
-
-### Key Fields
-
-| Field | Type | Purpose |
-|---|---|---|
-| physical_address | CharField | User address |
-| coordinates | JSONField | Geolocation data |
-| apiResults | JSONField | External API response storage |
-
----
-
-# Design Principles
-
-## Separation of Concerns
-
-Frontend and backend responsibilities are clearly separated.
+## Current Responsibilities
 
 ### Frontend
-- Presentation
-- User interaction
-- State handling
+
+The frontend is a React 18 application located under `frontend/`. It currently uses JavaScript, React Router, React Bootstrap, Redux, Redux Thunk, Axios, and Google Places Autocomplete.
+
+Responsibilities:
+
+- Render the browser user experience.
+- Capture user and address input.
+- Maintain client-side state in Redux and local storage.
+- Call backend REST endpoints.
+- Display loading, message, and layout components.
 
 ### Backend
-- Business logic
-- Persistence
-- Validation
 
----
+The backend is a Django application located under `backend/`. It uses Django REST Framework, SimpleJWT, CORS middleware, Postgres-compatible configuration, and Sentry SDK dependencies.
 
-## Modular Design
+Responsibilities:
 
-The application uses modular folder structures for maintainability.
+- Expose REST API endpoints.
+- Serialize user and address data.
+- Persist application data.
+- Generate JWT access tokens for registered users.
+- Serve Django admin and static/media configuration for local development.
 
-Examples:
-- Components
-- Reducers
-- Actions
-- Models
-- Views
+### Data Layer
 
----
+The current data model is small. The primary domain object is an `Address` model linked one-to-one with Django's built-in `User` model.
 
-## API-Driven Architecture
+| Field | Purpose |
+| --- | --- |
+| `user` | One-to-one relationship with the Django user. |
+| `physical_address` | Human-readable address text. |
+| `coordinates` | JSON coordinate payload. |
+| `apiResults` | JSON payload from the address lookup provider. |
 
-The frontend depends entirely on backend APIs, enabling:
-- Independent frontend evolution
-- Potential mobile app integration
-- Scalable backend services
+## REST API Communication
 
----
+The frontend communicates with the backend through HTTP and JSON. Current API routing is centered under:
 
-# Infrastructure Architecture
+```text
+/api/users/
+```
 
-## Docker-Based Development
+The application should continue to preserve this separation as it grows:
 
-Docker is used to:
-- Standardize environments
-- Simplify onboarding
-- Improve deployment consistency
+- Browser concerns remain in React.
+- Business logic, validation, and persistence remain in Django.
+- Shared contracts should become explicit through typed frontend services and backend API documentation.
 
-### Services
-- React frontend container
-- Django backend container
+## Local Development Architecture
 
----
+Docker Compose currently starts:
 
-# Deployment Considerations
+- `frontend`: React development server.
+- `backend`: Django development server.
+- `pgdb`: Postgres/PostGIS database.
+- `pgadmin`: database administration UI.
 
-The application structure is cloud-ready and can be extended for:
+This keeps local development simple and visible. Future services such as Redis and Celery should be added only when background processing is implemented.
 
-- AWS ECS
-- Kubernetes
-- CI/CD pipelines
-- Reverse proxy integration
-- Managed databases
+## Modernization Direction
 
----
+The target architecture is documented in `docs/project_workflow.md`. The intended direction is:
 
-# Security Considerations
+- React + TypeScript frontend with feature-based folders.
+- Modular Django backend under `backend/apps/`.
+- Dedicated apps for accounts, addresses, ingestion, analytics, and shared utilities.
+- JWT authentication with clear local and cloud authentication paths.
+- Celery and Redis for asynchronous processing.
+- Ingestion event tracking and analytics summary endpoints.
+- CI workflows for frontend, backend, Docker, and Terraform validation.
+- Observability through structured logs, health checks, metrics design, and documented alerting.
+- Terraform and Kubernetes reference artifacts for AWS deployment patterns.
 
-Current project demonstrates foundational security concepts:
+## Demo vs Production Intent
 
-- JWT-ready authentication structure
-- Environment variable configuration
-- Backend API isolation
-- Controlled API exposure
+Some future artifacts are intended to demonstrate architecture rather than provide a ready-to-run production platform. Examples include Terraform modules, Kubernetes manifests, Cognito integration placeholders, Snowflake adapters, and Apache Iceberg references.
 
-Potential future improvements:
-- Role-based authorization
-- HTTPS enforcement
-- Secret management
-- API rate limiting
+When those artifacts are added, they should be labeled clearly as one of:
 
----
+- **Implemented locally**: runs through Docker Compose or local commands.
+- **Reference implementation**: realistic structure, but not wired to live cloud services.
+- **Roadmap**: documented design that has not been implemented yet.
 
-# Engineering Concepts Demonstrated
+## Design Principles
 
-This project demonstrates competency in:
+- Keep local development runnable with Docker Compose.
+- Prefer incremental refactoring over wholesale replacement.
+- Add technology only when it supports a visible capability.
+- Document major choices in this file or in Architecture Decision Records.
+- Keep claims aligned with the repository's actual implementation.
 
-- Full-stack development
-- React engineering
-- Python/Django engineering
-- REST APIs
-- Docker workflows
-- Application modularization
-- Frontend/backend integration
-- Cloud-ready architecture
+## Architecture Decision Records
 
----
-
-# Future Evolution
-
-Potential future platform improvements include:
-
-- Event-driven architecture
-- Microservices decomposition
-- Observability stack
-- Automated testing
-- Infrastructure as Code
-- Kubernetes orchestration
+Major decisions are tracked in `docs/adr/`. Existing React, Django REST Framework, and Docker Compose choices are recorded as accepted decisions. Planned modernization decisions, such as TypeScript, Cognito, Celery, ingestion, Terraform, and Kubernetes, are recorded as proposed until implemented.

@@ -5,9 +5,7 @@ ENV PATH="./node_modules/.bin:$PATH"
 
 
 COPY package.json .
-RUN npm install
-
-RUN echo fs.inotify.max_user_watches=524288 | tee -a /etc/sysctl.conf && sysctl -p
+RUN npm install --legacy-peer-deps
 
 ENV PORT=3000
 EXPOSE $PORT

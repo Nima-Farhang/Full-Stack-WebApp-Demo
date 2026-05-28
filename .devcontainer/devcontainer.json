@@ -1,0 +1,49 @@
+{
+  "name": "Utilez WebApp",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "forwardPorts": [3000, 8000, 8080, 5432],
+  "portsAttributes": {
+    "3000": {
+      "label": "React frontend",
+      "onAutoForward": "notify"
+    },
+    "8000": {
+      "label": "Django backend",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "pgAdmin",
+      "onAutoForward": "silent"
+    },
+    "5432": {
+      "label": "Postgres/PostGIS",
+      "onAutoForward": "silent"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "remoteUser": "vscode"
+}

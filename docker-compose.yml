@@ -1,0 +1,59 @@
+version: "3.3"
+
+services:
+  # container name
+  backend:
+    build: ./backend
+    container_name: backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/usr/src/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - frontend
+      - pgdb
+    links:
+      - pgdb
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    command: npm start
+    stdin_open: true
+    tty: true
+
+  pgdb:
+    # image name
+    image: postgis/postgis
+    container_name: pgdb
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=backend-db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    volumes:
+      - ./data/postgresadmin:/var/lib/pgadmin/sessions
+    ports:
+      - "8080:80"
+    env_file:
+      - .env
+    depends_on:
+      - pgdb
+    links:
+      - pgdb

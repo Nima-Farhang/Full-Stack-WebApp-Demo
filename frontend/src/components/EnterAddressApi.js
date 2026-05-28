@@ -20,7 +20,7 @@ function EnterAddressApi() {
     const script = document.createElement("script");
 
     script.src =
-      "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyA6Tzb_GJy6NQ7ZpsvyvZMsODG--hhFMJ0";
+      "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key={Goog-API}";
     script.async = false;
     document.head.appendChild(script);
     script.addEventListener("load", () => setLoaded(true));
